@@ -491,7 +491,7 @@ class NetSensor(BaseSensor):
         mgr = SensorManager()
         current[0] /= mgr.get_interval()
         current[1] /= mgr.get_interval()
-        return '↓{:>9s}/s ↑{:>9s}/s'.format(bytes_to_human(current[0]), bytes_to_human(current[1]))
+        return '{:>9s}/s↓{:>9s}/s↑'.format(bytes_to_human(current[0]), bytes_to_human(current[1]))
 
 
 class NetIsoSensor(BaseSensor):
@@ -518,7 +518,7 @@ class NetIsoSensor(BaseSensor):
         mgr = SensorManager()
         current[0] /= mgr.get_interval()
         current[1] /= mgr.get_interval()
-        return '↓{:>9s}/s ↑{:>9s}/s'.format(bytes_to_human(current[0]), bytes_to_human(current[1]))
+        return '{:>9s}/s↓{:>9s}/s↑'.format(bytes_to_human(current[0]), bytes_to_human(current[1]))
 
 
 class NetCompSensor(BaseSensor):
@@ -543,7 +543,7 @@ class NetCompSensor(BaseSensor):
         mgr = SensorManager()
         current[0] /= mgr.get_interval()
         current[1] /= mgr.get_interval()
-        return '⇵{:>9s}/s'.format(bytes_to_human(current[0] + current[1]))
+        return '{:>9s}/s⇵'.format(bytes_to_human(current[0] + current[1]))
 
 class TotalNetSensor(BaseSensor):
     name = 'totalnet'
@@ -562,7 +562,7 @@ class TotalNetSensor(BaseSensor):
         mgr = SensorManager()
         current[0] /= mgr.get_interval()
         current[1] /= mgr.get_interval()
-        return ' Σ{:>9s}'.format(bytes_to_human(current[0] + current[1]))
+        return '{:>9s}Σ'.format(bytes_to_human(current[0] + current[1]))
 
 class BatSensor(BaseSensor):
     name = 'bat\d*'
