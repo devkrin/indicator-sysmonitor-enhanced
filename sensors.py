@@ -71,7 +71,6 @@ class SensorManager(object):
                                      NvGPUMem(),
                                      MemSensor(),
                                      NetSensor(),
-                                     NetIsoSensor(),
                                      NetCompSensor(),
                                      TotalNetSensor(),
                                      BatSensor(),
@@ -471,31 +470,6 @@ class MemSensor(BaseSensor):
 
 class NetSensor(BaseSensor):
     name = 'net'
-    desc = _('Network activity with local loop counted.')
-    _last_net_usage = [0, 0]  # (up, down)
-
-    def get_value(self, sensor_data):
-        return self._fetch_net()
-
-    def _fetch_net(self):
-        """It returns the bytes sent and received in bytes/second"""
-        current = [0, 0]
-        for _, iostat in list(ps.net_io_counters(pernic=True).items()):
-            current[0] += iostat.bytes_recv
-            current[1] += iostat.bytes_sent
-        dummy = copy.deepcopy(current)
-
-        current[0] -= self._last_net_usage[0]
-        current[1] -= self._last_net_usage[1]
-        self._last_net_usage = dummy
-        mgr = SensorManager()
-        current[0] /= mgr.get_interval()
-        current[1] /= mgr.get_interval()
-        return '{:>9s}/s↓{:>9s}/s↑'.format(bytes_to_human(current[0]), bytes_to_human(current[1]))
-
-
-class NetIsoSensor(BaseSensor):
-    name = 'netiso'
     desc = _('Network activity without local loop counted.')
     _last_net_usage = [0, 0]  # (up, down)
 
@@ -532,7 +506,9 @@ class NetCompSensor(BaseSensor):
     def _fetch_net(self):
         """It returns the bytes sent and received in bytes/second"""
         current = [0, 0]
-        for _, iostat in list(ps.net_io_counters(pernic=True).items()):
+        for iface, iostat in list(ps.net_io_counters(pernic=True).items()):
+            if iface == 'lo':
+                continue
             current[0] += iostat.bytes_recv
             current[1] += iostat.bytes_sent
         dummy = copy.deepcopy(current)
@@ -555,7 +531,9 @@ class TotalNetSensor(BaseSensor):
     def _fetch_net(self):
         """It returns total number the bytes sent and received"""
         current = [0, 0]
-        for _, iostat in list(ps.net_io_counters(pernic=True).items()):
+        for iface, iostat in list(ps.net_io_counters(pernic=True).items()):
+            if iface == 'lo':
+                continue
             current[0] += iostat.bytes_recv
             current[1] += iostat.bytes_sent
 
